@@ -1,7 +1,8 @@
-// Searches GMail label for URLs in messages
-// Returns URLs in list, pushes data to Google Sheet
 //
-function GetURLs ()
+// Searches one label for the first time someone sent you an email
+// Returns name, e-mail address (extracted from the "From" field) and message time
+//
+function GetAddresses ()
 {
   // Get the active spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();  
@@ -11,13 +12,13 @@ function GetURLs ()
  
   var labelName = userInputSheet.getRange("B2").getValue();
  
-  // Create/empty target sheet
+  // Create / empty the target sheet
   var sheetName = "Label: " + labelName;
   var sheet = ss.getSheetByName (sheetName) || ss.insertSheet (sheetName, ss.getSheets().length);
   sheet.clear();
  
-  // Get all URLs in nested array (threads -> messages)
-  var urlsOnly = [];
+  // Get all messages in a nested array (threads -> messages)
+  var addressesOnly = [];
   var messageData = [];
  
   var startIndex = 0;
@@ -40,13 +41,16 @@ function GetURLs ()
       // Loop over all messages in this thread
       for (var j = 0; j < messages[i].length; j++)
       {
-        var urlStore = messages[i][j].getBody();
+        var mailFrom = messages[i][j].getFrom ();
+        var mailDate = messages[i][j].getDate ();
  
-        // urlGet formats (http or https):
-        // http://
-        // https://
+        // mailFrom format may be either one of these:
+        // name@domain.com
+        // any text <name@domain.com>
+        // "any text" <name@domain.com>
  
-        var urlGet = "";
+        var name = "";
+        var email = "";
         var matches = mailFrom.match (/\s*"?([^"]*)"?\s+<(.+)>/);
         if (matches)
         {
@@ -61,14 +65,13 @@ function GetURLs ()
         var index = addressesOnly.indexOf (mailFrom);
         if (index > -1)
         {
-          // We already have this address
-		  //remove it (ordered by data new to old)
+          // We already have this address -> remove it (so that the result is ordered by data from new to old)
           addressesOnly.splice(index, 1);
           messageData.splice(index, 1);
         }
  
-        // Add data
-        addressesOnly.push (urlGet);
+        // Add the data
+        addressesOnly.push (mailFrom);
         messageData.push ([name, email, mailDate]);
       }
     }
@@ -87,8 +90,8 @@ function onOpen ()
   var sheet = SpreadsheetApp.getActiveSpreadsheet ();
  
   var menu = [ 
-    {name: "Extract URLs",functionName: "GetURLs"}
+    {name: "Extract email addresses",functionName: "GetAddresses"}
   ];  
  
-  sheet.addMenu ("Get Links", menu);    
+  sheet.addMenu ("HK Scripts", menu);    
 }
