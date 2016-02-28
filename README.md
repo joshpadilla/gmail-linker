@@ -1,4 +1,4 @@
-# gmail-linker
+# Gmail-Linker
 Extract all URLs from GMail Label, save to GSheet
 
 I often perform research throughout the week on my phone, tablet, and various computers (mostly on DevOps, Programming and Cloud Infrastructure topics). So daily, I am emailing myself links with URLs in the body of the messages.  
