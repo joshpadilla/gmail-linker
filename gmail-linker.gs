@@ -1,8 +1,7 @@
-//
-// Searches one label for the first time someone sent you an email
+// Searches one GMail label for URLs in email messages
 // Returns name, e-mail address (extracted from the "From" field) and message time
 //
-function GetAddresses ()
+function GetURLs ()
 {
   // Get the active spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();  
@@ -12,13 +11,13 @@ function GetAddresses ()
  
   var labelName = userInputSheet.getRange("B2").getValue();
  
-  // Create / empty the target sheet
+  // Create/empty the target sheet
   var sheetName = "Label: " + labelName;
   var sheet = ss.getSheetByName (sheetName) || ss.insertSheet (sheetName, ss.getSheets().length);
   sheet.clear();
  
-  // Get all messages in a nested array (threads -> messages)
-  var addressesOnly = [];
+  // Get all URLs in nested array (threads -> messages)
+  var urlsOnly = [];
   var messageData = [];
  
   var startIndex = 0;
@@ -44,12 +43,11 @@ function GetAddresses ()
         var mailFrom = messages[i][j].getFrom ();
         var mailDate = messages[i][j].getDate ();
  
-        // mailFrom format may be either one of these:
-        // name@domain.com
-        // any text <name@domain.com>
-        // "any text" <name@domain.com>
+        // urlGet formats (http or https):
+        // http://
+        // https://
  
-        var name = "";
+        var urlGet = "";
         var email = "";
         var matches = mailFrom.match (/\s*"?([^"]*)"?\s+<(.+)>/);
         if (matches)
