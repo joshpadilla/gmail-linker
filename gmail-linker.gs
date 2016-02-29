@@ -2,7 +2,7 @@
 //Returns URLs in list, pushes data to Google Sheet
 function GetURLs ()
 {
-  //Get the active spreadsheet
+  //Get active spreadsheet
   var ss = SpreadsheetApp.getActiveSpreadsheet();  
  
   //Label to search
@@ -10,7 +10,7 @@ function GetURLs ()
  
   var labelName = userInputSheet.getRange("B2").getValue();
  
-  //Create/empty target sheet
+  //Create, empty target sheet
   var sheetName = "Label: " + labelName;
   var sheet = ss.getSheetByName (sheetName) || ss.insertSheet (sheetName, ss.getSheets().length);
   sheet.clear();
@@ -30,13 +30,13 @@ function GetURLs ()
     else
       startIndex += pageSize;
  
-    //Get all messages for the current batch of threads
+    //Get all messages for current threads batch
     var messages = GmailApp.getMessagesForThreads (threads);
  
     //Loop over all messages
     for (var i = 0; i < messages.length ; i++)
     {
-      //Loop over all messages in this thread
+      //Loop over all messages in thread
       for (var j = 0; j < messages[i].length; j++)
       {
         var urlStore = messages[i][j].getBody ();
